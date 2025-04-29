@@ -37,7 +37,7 @@ spec:
         image: srinikysj4512/backend:v1
         envFrom:
         - configMapRef:
-          name: backend
+            name: backend
 
 ---
 apiVersion: v1 
