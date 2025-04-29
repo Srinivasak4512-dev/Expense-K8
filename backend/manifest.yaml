@@ -1,47 +1,53 @@
-apiVersion: apps/v1                 # Version of the Deployment API.
-kind: Deployment                    # Declares this object as a Deployment.
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: backend                     # Name of the Deployment object.
-  namespace: expense                # Namespace where the Deployment is created.
-  labels:                           # Labels to identify this Deployment (used for organizing).
+  name: backend
+  namespace: expense
+data:
+  DB_HOST: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: expense
+  labels:
     app: backend
-    tier: api                        # ✅ This label defines the tier of the application as 'api' and it must match the selector in the spec.selector.matchLabels to ensure the Deployment manages its Pods correctly.
+    tier: api
     project: expense
 spec:
-  replicas: 2                       # Number of Pod replicas to maintain.
-  selector:                         # Selects Pods to manage using labels.
+  replicas: 2
+  selector:
     matchLabels:
       app: backend
-      tier: api                     # ✅ Must match the labels below (correct here).
+      tier: api
       project: expense
-  template:                         # Pod template to create Pods if they don’t exist.
+  template:
     metadata:
-      labels:                       # Labels applied to Pods created by this Deployment.
+      labels:
         app: backend
         tier: api
         project: expense
     spec:
-      containers:                   # Container configuration block.
-      - name: backend               # Container name.
-        image: srinikysj4512/backend:v1   # Docker image to run in the container.
+      containers:
+      - name: backend
+        image: joindevops/backend:v1
         envFrom:
-        - configMapRef:             # Pull environment variables from the ConfigMap.
-            name: backend           # Refers to the ConfigMap named "backend".
-
+        - configMapRef:
+            name: backend
 ---
-apiVersion: v1                      # API version for the Service object.
-kind: Service                       # Declares this object as a Service.
+kind: Service
+apiVersion: v1
 metadata:
-  name: backend                     # Name of the Service.
-  namespace: expense                # Namespace where the Service is created.
+  name: backend
+  namespace: expense
 spec:
-  selector:                         # Identifies Pods to expose using labels.
+  selector:
     app: backend
     tier: api
     project: expense
   ports:
-  - name: backend-port              # Port name (optional, useful for reference).
-    protocol: TCP                   # Protocol to use (TCP is default).
-    port: 8080                      # Port exposed inside the cluster (Service port).
-    targetPort: 8080                # Port on the container where traffic will be forwarded.
-
+  - name: backend-port
+    protocol: TCP
+    port: 8080 # service port
+    targetPort: 8080 # container port
