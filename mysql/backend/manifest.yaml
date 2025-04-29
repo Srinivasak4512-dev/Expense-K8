@@ -1,0 +1,57 @@
+# ConfigMap - A ConfigMap is an API object used to store non-confidential data in key-value pairs. 
+# Pods can consume ConfigMaps as environment variables, command-line arguments, or as configuration files in a volume.
+
+apiVersion: v1                      # Specifies the API version (v1) for the ConfigMap resource
+kind: ConfigMap                     # Defines the resource type as ConfigMap
+metadata:                           # Metadata information about the ConfigMap
+  name: backend
+  namespace: expense               # Sets the name of the ConfigMap to "nginx-config"
+data:                               # Contains the data stored in the ConfigMap as key-value pairs
+  DB_HOST: mysql                 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: expense
+  labels: 
+    app: mysql
+    tier: db 
+    project: expense
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+      tier: api
+      project: expense
+  template:
+    metadata:
+      labels: 
+        app: backend
+        tier: api 
+        project: expense
+    spec: 
+      containers:
+      - name: backend
+        image: srinikysj4512/backend:v1
+        envFrom:
+        - configMapRef:
+          name: backend
+
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: backend
+  namespace: expense
+spec: 
+  selector:
+    app: backend
+    tier: api 
+    project: expense
+  ports: 
+  - name: backend-port
+    protocol: TCP 
+    port: 8080
+    targetPort: 8080

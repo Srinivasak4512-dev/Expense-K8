@@ -27,3 +27,19 @@ spec:
       containers:
       - name: mysql                # Name of the container (within the Pod)
         image: srinikysj4512/mysql:v1   # Docker image to be used for this container
+
+--- 
+apiVersion: v1 
+kind: Service
+metadata:
+  name: mysql
+  namespace: expense
+spec:
+  selector:
+    app: mysql
+    tier: db
+    project: expense
+  ports:
+  - name: mysql-port
+    protocol: TCP
+    port: 3306 #
