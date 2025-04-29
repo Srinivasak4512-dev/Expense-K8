@@ -1,0 +1,7 @@
+apiVersion: v1                      # Version of the Kubernetes API used to create the object.
+kind: ConfigMap                     # Declares this object as a ConfigMap.
+metadata:                           # Metadata section that provides details about the object.
+  name: backend                     # The name of the ConfigMap; used to reference it in other resources like Deployments or Pods.
+  namespace: expense                # The namespace in which this ConfigMap is created and accessible.
+data:                               # Key-value pair section to hold configuration data (non-sensitive).
+  DB_HOST: mysql                    # Defines a key 'DB_HOST' with the value 'mysql'. # This value can be exposed to containers as an environment variable (e.g., DB_HOST=mysql), # typically pointing to the hostname of a database service within the cluster.
