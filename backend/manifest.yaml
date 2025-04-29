@@ -1,57 +1,57 @@
-# ConfigMap - A ConfigMap is an API object used to store non-confidential data in key-value pairs. 
-# Pods can consume ConfigMaps as environment variables, command-line arguments, or as configuration files in a volume.
-
-apiVersion: v1                      # Specifies the API version (v1) for the ConfigMap resource
-kind: ConfigMap                     # Defines the resource type as ConfigMap
-metadata:                           # Metadata information about the ConfigMap
-  name: backend
-  namespace: expense               # Sets the name of the ConfigMap to "nginx-config"
-data:                               # Contains the data stored in the ConfigMap as key-value pairs
-  DB_HOST: mysql                 
+apiVersion: v1                      # Version of the Kubernetes API used to create the object.
+kind: ConfigMap                     # Declares this object as a ConfigMap.
+metadata:                           # Metadata about the ConfigMap.
+  name: backend                     # Name of the ConfigMap (used for reference in pods).
+  namespace: expense                # Namespace where this ConfigMap exists.
+data:                               # Key-value pairs of non-sensitive configuration data.
+  DB_HOST: mysql                    # Sets the environment variable DB_HOST with value 'mysql'.
+               
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1                 # Version of the Deployment API.
+kind: Deployment                    # Declares this object as a Deployment.
 metadata:
-  name: backend
-  namespace: expense
-  labels: 
-    app: mysql
-    tier: db 
+  name: backend                     # Name of the Deployment object.
+  namespace: expense                # Namespace where the Deployment is created.
+  labels:                           # Labels to identify this Deployment (used for organizing).
+    app: backend
+    tier: api                        # ✅ This label defines the tier of the application as 'api' and it must match the selector in the spec.selector.matchLabels to ensure the Deployment manages its Pods correctly.
     project: expense
 spec:
-  replicas: 2
-  selector:
+  replicas: 2                       # Number of Pod replicas to maintain.
+  selector:                         # Selects Pods to manage using labels.
     matchLabels:
-      app: mysql
-      tier: api
+      app: backend
+      tier: api                     # ✅ Must match the labels below (correct here).
       project: expense
-  template:
+  template:                         # Pod template to create Pods if they don’t exist.
     metadata:
-      labels: 
+      labels:                       # Labels applied to Pods created by this Deployment.
         app: backend
-        tier: api 
+        tier: api
         project: expense
-    spec: 
-      containers:
-      - name: backend
-        image: srinikysj4512/backend:v1
+    spec:
+      containers:                   # Container configuration block.
+      - name: backend               # Container name.
+        image: srinikysj4512/backend:v1   # Docker image to run in the container.
         envFrom:
-        - configMapRef:
-            name: backend
+        - configMapRef:             # Pull environment variables from the ConfigMap.
+            name: backend           # Refers to the ConfigMap named "backend".
+
 
 ---
-apiVersion: v1 
-kind: Service
+apiVersion: v1                      # API version for the Service object.
+kind: Service                       # Declares this object as a Service.
 metadata:
-  name: backend
-  namespace: expense
-spec: 
-  selector:
+  name: backend                     # Name of the Service.
+  namespace: expense                # Namespace where the Service is created.
+spec:
+  selector:                         # Identifies Pods to expose using labels.
     app: backend
-    tier: api 
+    tier: api
     project: expense
-  ports: 
-  - name: backend-port
-    protocol: TCP 
-    port: 8080
-    targetPort: 8080
+  ports:
+  - name: backend-port              # Port name (optional, useful for reference).
+    protocol: TCP                   # Protocol to use (TCP is default).
+    port: 8080                      # Port exposed inside the cluster (Service port).
+    targetPort: 8080                # Port on the container where traffic will be forwarded.
+
