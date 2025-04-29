@@ -1,36 +1,32 @@
-apiVersion: apps/v1                # Using the stable apps/v1 API version for managing deployments
-kind: Deployment                   # Specifies that this is a Deployment kind object
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: mysql                      # Name of the deployment object
-  namespace: expense               # Namespace where this deployment will be created
-  labels:                          # Metadata labels for identifying the deployment
-    app: mysql                     # Label 'app' set to 'mysql' (used for identification and selectors)
-    tier: db                       # Label 'tier' set to 'db' (useful for tiered app structure)
-    project: expense               # Label 'project' set to 'expense' (to group by project)
-
+  name: mysql
+  namespace: expense
+  labels:
+    app: mysql
+    tier: db
+    project: expense
 spec:
-  replicas: 1                      # Number of Pod replicas to maintain (here, just one MySQL pod)
-  selector:                        # Defines how to find the Pods this Deployment will manage
-    matchLabels:                   # Pods must match these labels to be managed by this Deployment
+  replicas: 3
+  selector:
+    matchLabels:
       app: mysql
       tier: db
       project: expense
-
-  template:                        # Pod template used by Deployment to create Pods
+  template:
     metadata:
-      labels:                      # These labels must match the selector above
+      labels:
         app: mysql
         tier: db
         project: expense
-
-    spec:                          # Specification of the Pod to be created
+    spec:
       containers:
-      - name: mysql                # Name of the container (within the Pod)
-        image: joindevops/mysql:v1   # Docker image to be used for this container
-
---- 
-apiVersion: v1 
+      - name: mysql
+        image: srinikysj4512/mysql:v1
+---
 kind: Service
+apiVersion: v1
 metadata:
   name: mysql
   namespace: expense
@@ -42,4 +38,5 @@ spec:
   ports:
   - name: mysql-port
     protocol: TCP
-    port: 3306 #
+    port: 3306 # service port
+    targetPort: 3306 # container port
