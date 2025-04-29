@@ -26,7 +26,7 @@ spec:
     spec:                          # Specification of the Pod to be created
       containers:
       - name: mysql                # Name of the container (within the Pod)
-        image: srinikysj4512/mysql:v1   # Docker image to be used for this container
+        image: joindevops/mysql:v1   # Docker image to be used for this container
 
 --- 
 apiVersion: v1 
